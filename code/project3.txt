@@ -1,0 +1,210 @@
+!pip install tensorflow-gpu=2.0.0.alha0
+# mount googlr drive
+from  google.colab  import drive
+drive.mount('/content/drive')
+
+# import libraries
+import tensorflow as tf
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+
+# load data set
+
+bike =pd.read_csv('/content/drive/My Drive/Colab Notebooks/bike_sharing_daily.csv')
+
+
+bike
+
+bike.head(5)
+
+bike.tail(5)
+
+bike.info()
+
+bike.describe()
+# clean up dataset
+
+sns.heatmap(bike.isnull())
+
+bike=bike.drop(labesl=['instants'],axis=1)
+
+bike
+
+bike=bike.drop(labels=['causal,registered'],axis=1)
+
+
+bike
+
+bike.dteday=pd.to_date(bike.dteday,format='%m/%d/%Y')
+bike
+
+
+bike.index=pd.DatetimeIndex(bike.dteday)
+
+
+bike
+
+bike=bike.drop(labels=[dteday],axis=1)
+
+bike
+
+#visualize dataset
+
+
+bike['cnt'].asfreq('W').plot(linewidth=3)
+plt.title('Bike Usage per week')
+plt.xlabel('week')
+plt.ylabel('bike rental')
+
+bike('cnt').asfreq('M').plot(linewidth=3)
+plt.title('bike usage per month')
+plt.xlable('month')
+plt.ylabel('bike rental')
+
+
+bike['cnt'].asfreq('Q').plot(linewidth=3)
+plt.title('bike usage per quater')
+plt.xlabel('Quarter')
+plt.ylable('Bike Rental')
+
+sns.pairplot(bike)
+
+X_numerical=bike['temp',hum','windspeed','cnt']
+
+X_nummerical
+
+
+sns.pairplot(X_numerical)
+sns.heatmap(X_numerical.corr(),annot=True)
+
+# create training and testing dataset
+
+
+X_cat=bike[['seacon','yr','mnth','holiday',weekday','workingday','weathersit']]
+
+
+X_cat
+
+
+from sklearn.preprocessing import OneHotEncoder
+
+onehotencoder=OneHotEncoder()
+
+C_cat=onehotencoder.fit_transform(X_cat).toarray()
+
+
+
+X_cat.shape
+
+X_cat=pd.DataFrame(X_cat)
+
+
+X_numerical
+
+X_numerical=X_numerical.reset_index()
+
+X_all=pd.concat([X_cat,X_numerical],axis=1)
+
+
+X_all
+
+X_all=X_alldrop('dteday',axis=1)
+
+X_all
+
+X=X_all[:,:-1].values
+y=X_all[:,-1:].values
+
+X.shape
+
+y.shape
+
+
+
+from sklearn.preprocessing import MinMaxScaler
+
+scaler=MinMaxScaler()
+y=scaler.fit_transform(y)
+
+
+
+from sklearn.model_selection import train_test_split
+
+X_train,X_test,y_train,y_test=train_test_split(X,y,test_size=0.2)
+
+X_train.shape
+
+X_test.shape
+
+
+
+#train  the model
+
+
+model.tf.keras.models.Sequential()
+model.add(tf.keras.layers.Dense(units=100,activation='relu',input_shape=(35,)))
+model.add(tf.keras.layers.Dense(units=100,activation='relu'))
+model.add(tf.keras.layers.Dense(units=100,activation=relu))
+model.add(tf.keras.layers.Dense(units=1,activation='linear'))
+
+mode.summary()
+
+
+model.compile(optimizer='Adam',loss='mean_squared_error')
+
+epoch_hist=model.fit(X_train,y_train,epochs=20,batch_size=50,validation_split=0.2)
+
+# evaluate the model
+
+epoch_hist.history.keys()
+
+plt.plot(epoch_hist.history['loss'])
+plt.plot(epoch_hist.history['val_loss'])
+plt.titile('model loss progress during training')
+plt.xlabel('epoch')
+plt.ylable('training and validation loss')
+plt.legend(['training loss','validation loss'])
+
+
+y_predict=model.predict(X_test)
+plt.plot(y_test,y_predict,"^",color='r')
+plt.xlabel('model predictions')
+plt.ylable('true values')
+
+y_predict_orig=scaler.inverse_transform(y_predict)
+y_test_orig=scaler.inverse_transform(y_test)
+
+
+
+plt.plot(y_test_orig,y_predict_orig,"^",color='r')
+plt.xlable('moel predictions')
+plt.ylabel('true values')
+
+k=X_test.shape[1]
+n=len(X_test)
+n
+
+
+from sklearn.metrics import r2_scrore,mean_sqaured_error,mean_absolute_error
+
+from math import sqrt
+
+
+
+emse=float(npsqrt(means_squared_error(y_test_orig,y_predict_orig)),'.4f'))
+
+mse=mean_squared_error(y_test_orig,y_predict_orig)
+mae=mean_absolute(y_test_orig,y_predict_orig)
+
+r2=r2_score(y_test_orig,y_predict_orig)
+adj_r2=1-(1-r2)*(n-1)/(n-k-1)
+
+print('rmse=',rmse,'\nmse=',mse,'\nmae=',mae,'\nr2=',r2,'\nAdjusted r2=',adj_r2)
+
+
+
+
+

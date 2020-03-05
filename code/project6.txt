@@ -1,0 +1,116 @@
+
+# import libraries
+
+!pip install tensorflow-gpu=2.0.0.alpha0
+import tensorflow as tf
+import pandas as pd
+import numpy as np
+import seaborn as sns
+import matplotlib.pyplot as plt
+
+
+#import datasets
+from google.colab import drive
+drive.mount('/content/drive')
+
+diabetes=pd.read_csv('/content/drive/My Drive/Colab Notebooks/diabetes.csv')
+
+diabetes
+
+diabetes.head()
+diabetes.tail()
+
+diabetes.infor()
+diabetes.describe()
+
+#clean up and visualizae dataset
+
+sns.countplot(x='Outcome',data=diabetes)
+
+sns.pairplot(diabetes,hue='Outcome',vars=['Pregnacies','Glucose',BloodPressure,'SkinThickness','Insulin','BMI','DiabetesPedigreeFunction','Age'])
+sns.heatmap(diabetes.corr(),annot=True)
+X=diabetes.iloc[:,0:8].values
+X
+
+y=diabetes.iloc[:,8].values
+
+y
+
+#Feature Scaling is must in ANN
+
+from sklearn.preprocessing import StandardScaler
+
+sc=StandardScaler()
+X=sc.fit_transform(X)
+
+X
+
+# split the dataset into training set and test set
+
+from sklearn.model_selection import train_test_split
+
+X_train,X_test,y_train,y_test=train_test_split(X,y,test_sie=0.2)
+
+# train the model
+
+classifier=tf.keras.model.Sequential()
+classifier.add(tf.keras.layers.Dense(units=400,activation='relu',input_shape=(8,)))
+classifier.add(tf.keras.layers.Dropout(0.2))
+classifier.add(tf.keras.layers.Dense(units=400,activation='relu'))
+classifier.add(tf.keras.layers.Dropout(0.2))
+classifier.add(tf.keras.layers.Dense(units=1, activation='sigmoid'))
+
+classifier.summary()
+
+classifier.compile(optimizer='Adam',loss='binary_crossentropy',metrics=['accuracy'])
+
+epochs_hist=classifier.fit(X_train,y_train,epochs=200)
+
+y_pred=classifier.predict(X_test)
+
+y_pred
+
+y_pred=(y_pred>0.5)
+
+epoch_hist.histroy.keys()
+
+
+plt.plot(epoch_hist.histroy['loss'])
+plt.title('Model loss progress during training')
+plt.xlabel('epoch')
+plt.ylabel('Training and validation loss')
+plt.legend(['Traing Loss'])
+plt.show()
+
+
+#Training set performance
+
+from sklearn.metrics import confusion_matrix
+
+y_train_pred=classifier.predict(X_train)
+y_train_pred=(y_train_pred>0.5)
+
+cm=confusion_matrix(y_train,y_train_pred)
+sns.heatmap(cm,annot=True)
+
+from sklearn.metrics import classification_report
+
+print(classification_report(y_train_pred,y_train))
+
+
+# Testing Set Performance
+
+cm=confusion_matrix(y_test,y_pred)
+sns.heatmap(cm,annot=True)
+
+
+from sklearn_metrics import classification_report
+
+print(classification_report(y_test,y_pred))
+
+
+
+
+
+
+

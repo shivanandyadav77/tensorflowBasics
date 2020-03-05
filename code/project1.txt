@@ -1,0 +1,72 @@
+# import libraries
+!pip install tensorflow-gpu=2.0.0.aplha0
+
+import tensorflow as tf
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+#mount google drive
+
+from google.colab  import drive
+drive.mount('/content/drive')
+
+#import dataset
+
+temperature_df=pd.read_csv('/content/drive/My Drive/Colab Notebooks/Celsius to Fahrenheit.csv')
+
+temperature_df.reset_index(drop=True,inplace=True)
+
+temperature_df
+temperature_df.head(5)
+temperature_df.tail(10)
+
+temperature.info()
+temperature.describe()
+
+
+# visualize dataset
+
+sns.scatterplot(temperature_df['Celsus'],temperature_df['Fahrenheit'])
+
+
+# create , testing and training dataset
+
+X_train=temperature_df['Celsius']
+y_train=temperature['Fahrenheit']
+
+
+
+# build and train the model
+X_train.shape
+y_train.shape
+
+model=tf.keras.Sequential()
+model.add(tf.keras.layers.Dense(units=1,input_shape[1]))
+
+model.summary()
+
+model.compile(optimizer=tf.keras.optimizer.Adam(0.5),loss='mean_squared_error')
+
+epochs_hist=model.fit(X_train,y_train,epochs=100)
+
+epochs.hist.history.keys()
+
+
+plt.plot(epochs_hist.history['loss'])
+plt.title('Model loss Progress During Training')
+plt.xlabel('epoch')
+plt.ylabel('Training loss')
+plt.legend('Training')
+model.get_weights()
+
+# Use the trained model to perform predictions
+Temp_C=0
+Temp_F=model.predict([Tmep_C])
+print('Temperature in degF using the trained Ann=',Temp_F)
+
+Temp_F=9/5*Temp_C+32
+
+print('Temperature',Temp_F)
+

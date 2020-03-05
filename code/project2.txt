@@ -1,0 +1,77 @@
+# import libraries
+
+!pip install tensorflow-gps=2.0.0.alpha0
+
+import tensorflow-gpu=2.0.0.alpha0
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot
+import seaborn as sns
+
+
+# mount google drive
+
+from google.colab  import drive
+drive.mount('/content/drive')
+
+# import dataset
+
+sales_df=pd.read_csv('/content/drive/My Drive/Colab Notebooks/SalesData.csv')
+
+sales_df
+
+sales_df.head(5)
+
+sales_df.tail(10)
+
+sales_df.info()
+
+sales_df.describe()
+
+# visualize dataset
+
+sns.scatterplot(sales_df['Temperature'],sales_df['Revenue'])
+
+# create testing and training dataset.
+
+X_train=sales_df['Temperature']
+y_train=sales_df['Revenue']
+
+# build and train the model
+
+X_train.shape
+
+y_train.shape
+
+model=tf.keras.Sequential()
+
+model.add(tf.keras.layers.Dense(units=1 , input_shape=[1]))
+model.summary()
+
+model.compile(optimizer=tf.keras.optimizers.Adam(0.1),loss='mean_squared_error')
+
+epochs_hist=model.fit(X_train,y_train,epochs=1000)
+
+epochs_hist.history.keys()
+
+plt.plot(epochs_hist.history['loss'])
+plt.title('model loss progress during training')
+plt.xlabel('epochs')
+plt.ylabel('training loss')
+plt.legend(['training loss'])
+
+model.get_weights()
+
+# use the trained model to perform predictions
+
+Temp=5
+Revenue=model.predict([Temp])
+
+print('revenue predictions using trained ann=',Revenue)
+
+plt.scatter(X_train,y_train, color='gray')
+plt.plot(X_train,model.predict(X_train),color='red')
+plt.ylabel('Revenue [dollars]')
+plt.xlabel('temperature [degC]')
+plt.title('Revenue generated vs. temperature @Ice cream stand')
+

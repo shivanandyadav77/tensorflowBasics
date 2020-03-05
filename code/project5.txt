@@ -1,0 +1,173 @@
+
+#import  libraries
+
+!pip install tensorflow-gpu=2.0.0.alpha0
+
+import tensorflow as tf
+import pandas as pd
+import numpy as np
+import seaborn as sns
+import matplotlib.pyplot as plt
+
+
+# import datasets
+
+from google.colab import drive
+drive.mount('/content/drive')
+
+df_alexa=pd.read_csv('/content/drive/My Drive/Colab Notebooks/amazon_alexa.tsv', sep='\t')
+
+df_alexa.head()
+
+df.keys()
+df.alexa.tail()
+
+df_alexa['verified_reviews']
+
+visualize dataset
+positiv=df_alexa[df_alexa['feedback']==1]
+negative=df_alexa[df_alexa['feedback']==0]
+
+
+sns.countplot(df_alexa['feedback'], label='Count')
+sns.countplot(x='rating',data=df_alexa)
+
+df_alexa['rating'].hist(bins=5)
+
+plt.figure(figsize=(40,15))
+
+sns.barplot(x='variation',y='rating',data=df_alexa,palette='deep')
+
+
+#clean up the data
+
+df_alexa.drop(['date','rating'],axis=1)
+
+df_alexa
+
+
+variation_dummies=pd.get_dummies(df_alexa['variation'],drop_first=True)
+
+variation_dummies
+
+# first let's drop the column
+df_alexa.drop(['variation'],axis=1,inplace=True)
+
+# now let's add the encode column again
+
+df_alexa=pd.concat([df_alexa,variation_dummies],axis=1)
+
+df_alexa
+
+#Count Vectorize(Tokenization) example
+
+from sklearn.feature_extraction.text from import CountVectorizer
+sample_data=['This is the first document.','This document is the second document.','And this is the third one.','Is this the first document?']
+
+vectorizer=CountVectorizer()
+X=vectorizer.fit_transform(sample_data)
+print(vectorizer.get_feature_names())
+
+print(X.toarray())
+
+#Back to our Case Study
+
+from sklearn.feature_extraction.text import CountVectorizer
+vectorizer=CountVectorizer()
+
+alexa_countvectorizer=vectorizer.fit_transform(df_alexa['verified_reviews'])
+
+alexa_countvectorizer.shape
+
+type(alexa_countvectorizer)
+
+print(vectorizer.get_feature_names())
+
+print(alexa_countvectrozer.toarray())
+
+# first let's drop the column
+df_alexa.drop(['verified_reviews'],axis=1,inplace=True)
+reviews=pd.DataFrame(alexa_countvectorizer.toarray())
+
+# now let's concatenate them together
+df_alexa=pd.concat([df_alexa,reviews],axis=1)
+df_alexa
+
+
+# Let's drop the target label coloms
+
+X=df_alexa.drop(['feedback'],axis=1)
+
+X
+
+y=df_alexa['feedback']
+
+#4: train the model
+
+from sklearn.model_selection import train_test_split
+
+X_train,Xtest,y_train,y_test=train_test_split(X,y,test_size=0.20,random_state=5)
+
+X_train.shape
+
+X_test.shape
+
+y_train.shape
+
+ANN_classifier=tf.keras.models.Sequential()
+
+ANN_classifier.add(tf.keras.layers.Dense(units=400,activation='relu',input_shape=(4059,)))
+ANN_classifier.add(tf.keras.layers.Dense(units=400,activation='relu'))
+ANN_classifier.add(tf.keras.layers.Dense(units=1,activation='sigmoid'))
+
+ANN_classifier.summary()
+
+
+ANN_classifier.compile(optimizer='Adam',loss='binary_crossentropy',metrics=['accuracy'])
+
+epochs_hist=ANN_classifier.fit(X_train,y_train,epochs=10)
+
+# evaluating the model
+
+from sklearn.metrics import classification_report,confusion_matrix
+
+y_pred_train=ANN_classifier.predict(X_train)
+y_pred_train
+
+y_pred_train=(y_pred_train>0.5)
+
+cm=confusion.matrix(y_train,y_pred_train)
+
+sns.heatmap(cm,annot=True)
+
+
+y_pred_test=ANN_classifier.predict(X_test)
+y_pred_test
+
+y_pred_test
+
+y_pred_test=(y_pred_test>0.5)
+
+cm=confusion_matrix(y_test,y_pred_test)
+
+sns.heatmap(cm,annot=True)
+
+
+epochs_hist.histroy.keys()
+
+plt.plot(epochs_hist.histroy['loss'])
+
+plt.title('Mpdel loss Progress During Training')
+plt.zlabel('Epoch')
+plt.ylabel('Training loss')
+plt.legend(['Training loss'])
+
+plt.plot(epochs_hist.history['accuracy'])
+
+plt.title('Model Accuracy Progress During Training')
+plt.xlabel('Epoch')
+plt.ylabel('Training Accuracy')
+plt.legend(['Training Accuracy'])
+
+
+

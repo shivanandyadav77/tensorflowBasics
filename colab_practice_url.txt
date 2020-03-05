@@ -1,0 +1,3 @@
+!pip install tensorflow-gpu==2.0.0.beta1
+
+example7:https://colab.research.google.com/drive/124-roAfxwK6EpNFxIXGmT_5yN1haN7bD#scrollTo=MBPuwxqaWAUf

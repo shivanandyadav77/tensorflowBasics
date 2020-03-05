@@ -1,0 +1,167 @@
+
+from google.colab import drive
+drive.mount('/content/drive')
+
+# import libraries
+!pip install tensorflow-gpu=2.0.0.alpha0
+
+import matplotlib.pyplot as plt
+import tensorflow as tf
+import tensorflow.keras import layers
+import pandas as pd
+import numpy as np
+import os
+import PIL
+import seaborn as sns
+import pickle
+
+# import dataset and normalize it
+with open("/content/drive/My Drive/Colab Notebooks/traffic-signs-data/train.p",mode='rb') as traing_data:
+	train=pickle.load(training_data)
+with open("/content/drive/My Drive/Colab Notebooks/traffic-signs-data/valid.p",mode='rb') as validation_data:
+	valid=pickle.load(validation_data)
+with open("/content/drive/My Drive/Colab Notebooks/traffic-signs-data/test.p") as testing_data:
+	test=pickle.load(testing_data)
+
+X_train,y_train=train['features'],train['labels']
+X_validation,y_validation=valid['features'],valid['labels']
+X_test,y_test=test['features'],test['labels']
+X_train.shape
+y_train.shape
+
+#visualize dataset
+
+i=3100
+plt.imshow(X_train[i])
+plt.imshow(y_train[i])
+
+i=3001
+plt.imshow(X_validation[i])
+plt.imshow(y_validation[i])
+
+i=2100
+plt.imshow(X_test[i])
+plt.imshow(y_test[i])
+
+
+# data preparation
+
+from sklearn.utils import shuffle
+
+X_train,y_train=shuffle(X_train,y_train)
+
+X_train_gray=np.sum(X_train/3,axis=3,keepdims=True)
+X_test_gray=np.sum(X_test/3,axis=3,keepdims=True)
+X_validation_gray=np.sum(X_validation/3,axis=3,keepdims=True)
+
+X_train_gray.shape
+
+X_test_gray.shape
+
+X_train_gray_norm=(X_train_gray-128)/128
+X_test_gray_norm=(X_test_gray-128)/128
+X_validation_norm=(X_validation_gray-128)/128
+
+X_train_gray_norm
+
+i=60
+
+plt.imshow(X_train_gray[i].squeeze(),cmap='gray')
+plt.figure()
+plt.imshow(X_train[i])
+plt.figure()
+plt.imshow(X_train_gray_norm[i].squeeze(),cmap='gray')
+
+i=610
+
+plt.imshow(X_test_gray[i].squeeze(),cmap='gray')
+plt.figure()
+plt.imshow(X_test[i])
+plt.figure()
+plt.imshow(X_test_gray_norm[i].squeeze(),cmap='gray')
+
+i=500
+plt.imshow(X_validation_gray[i].squeeze(),cmap='gray')
+plt.figure()
+plt.imshow(X_validation)
+plt.figure()
+plt.imshow(X_validation_gray_norm[i].squeeze(),cmap='gray')
+
+X_validation_gray.shape
+
+# model training
+
+from tensorflow.keras import datasets,layers,models
+
+leNet=models.Squential()
+leNet.add(layers.Conv2D(6,(5,5),activation='relu',input_shape=(32,32,1)))
+leNet.add(layers.AveragePooling2D())
+
+leNet.add(layers.Conv2D(16,(5,5),activation='relu'))
+leNet.add(layers.AveragePooling2D())
+
+leNet.add(layers.Flatten())
+
+leNet.add(layers.Dense(120,activation='relu'))
+leNet.add(layers.Dense(84,activation='relu'))
+leNet.add(layers.Dense(43,activation='softmax'))
+
+leNet.summary()
+
+leNet.compile(optimizer='Adam',loss='sparse_categorical_crossentropy',metrics=['accuracy'])
+
+history=leNet.fit(X_train_gray_norm,y_train,batch_size=500,nb_epoch=50,verbose=1,validation_data=(X_validation_gray_norm,y_validation))
+
+score=leNet.evaluate(X_test_gray_norm,y_test)
+print('Test Accuracy:{}'.format(score[1]))
+
+history.history.keys()
+
+accuracy=history.history['accuracy']
+val_accuracy=history.history['val_accuracy']
+loss=history.history['loss']
+val_loss=history.history['val_loss']
+
+
+epochs=range(len(accuracy))
+plt.plot(epochs,accuracy,'bo',label='Training Accuracy')
+plt.plot(epochs,val_accuracy,'b',label='Validation Accuracy')
+plt.title('Training and validation Accuracy')
+plt.legend()
+
+
+plt.plot(epochs,loss,'ro',label='Training loss')
+plt.plot(epochs,val_loss,'r',label='Validation loss')
+plt.title('Training and Validation loss')
+plt.legend()
+
+
+predicted_classes=leNet.predicted_classes(X_test_gray_norm)
+y_true=y_test
+
+
+from sklearn.metrics import confusion_matrix
+cm=confusion_matrix(y_true,predicted_classes)
+plt.figure(figsize=(25,25))
+sns.heatmap(cm,annt=True)
+
+L=7
+W=7
+fig,axes=plt.subplots(L,W,figsize=(12,12))
+axes=axes.ravel()
+
+for i in np.arange(0,L*W):
+	axes[i].imshow(X_test[i])
+	axes[i].set_title('Prediction={}\n True={}'.format(predicted_classes[i],y_true[i]))
+	axes[i].axis('off')
+
+plt.subplots_adjust(wspace=1)
+
+
+
+
+
+
+
+
+
